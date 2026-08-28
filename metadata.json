@@ -1,0 +1,6 @@
+{
+  "name": "Photo Print A4 Layout Editor",
+  "description": "Desktop photo printing layout tool for Godiyal General Store with automatic multi-photo A4 arrangement, interactive canvas editor, passport photo mode, and print-ready PDF/image export.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
