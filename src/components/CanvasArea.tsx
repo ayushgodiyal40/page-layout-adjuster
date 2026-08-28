@@ -24,6 +24,8 @@ import {
   Unlock,
   ZoomIn,
   ZoomOut,
+  Upload,
+  Image as ImageIcon,
 } from 'lucide-react';
 
 interface CanvasAreaProps {
@@ -42,6 +44,7 @@ interface CanvasAreaProps {
   onDuplicatePhoto: (placed: PlacedPhoto) => void;
   onDeletePlacedPhoto: (id: string) => void;
   onPlacePhotoOnPage: (photo: SourcePhoto) => void;
+  onAddPhotos?: (files: FileList | null) => void;
 }
 
 type DragMode = 'move' | 'nw' | 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'rotate' | null;
@@ -62,9 +65,11 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
   onDuplicatePhoto,
   onDeletePlacedPhoto,
   onPlacePhotoOnPage,
+  onAddPhotos,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
+  const canvasFileInputRef = useRef<HTMLInputElement>(null);
 
   const { width: a4WidthMm, height: a4HeightMm } = getA4Dimensions(layoutConfig.orientation);
 
@@ -735,16 +740,52 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
           );
         })}
 
+        {/* Hidden File Input for Canvas Drop/Click */}
+        {onAddPhotos && (
+          <input
+            type="file"
+            ref={canvasFileInputRef}
+            onChange={(e) => onAddPhotos(e.target.files)}
+            multiple
+            accept="image/jpeg,image/png,image/webp,image/bmp,image/tiff,image/*"
+            className="hidden"
+          />
+        )}
+
         {/* Empty Page Callout */}
         {page.photos.length === 0 && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-neutral-400 p-8 text-center pointer-events-none">
-            <div className="w-16 h-16 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-400 mb-3 shadow-inner">
-              <Scissors className="w-8 h-8 opacity-40" />
-            </div>
-            <h3 className="font-semibold text-neutral-700 text-sm">This A4 Page is Empty</h3>
-            <p className="text-neutral-500 text-xs mt-1 max-w-xs">
-              Click &quot;Auto Arrange&quot; at the top, or click &quot;Place&quot; on photos in the left panel to add them to this page.
-            </p>
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-neutral-400 p-8 text-center">
+            {sourcePhotos.length === 0 ? (
+              <div className="flex flex-col items-center max-w-sm pointer-events-auto">
+                <div className="w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 mb-4 shadow-sm">
+                  <Upload className="w-8 h-8 opacity-90" />
+                </div>
+                <h3 className="font-bold text-neutral-800 text-base">Select Your Photos to Start</h3>
+                <p className="text-neutral-500 text-xs mt-1.5 leading-relaxed">
+                  Upload customer photos from your device. They will be automatically arranged onto this A4 print sheet with customizable sizes and borders.
+                </p>
+                {onAddPhotos && (
+                  <button
+                    id="canvas-upload-photos-btn"
+                    onClick={() => canvasFileInputRef.current?.click()}
+                    className="mt-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold shadow-md hover:shadow transition-all flex items-center gap-2"
+                  >
+                    <Upload className="w-4 h-4" />
+                    Select Photos from Computer
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center max-w-xs pointer-events-none">
+                <div className="w-14 h-14 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-400 mb-3 shadow-inner">
+                  <ImageIcon className="w-7 h-7 opacity-40" />
+                </div>
+                <h3 className="font-semibold text-neutral-700 text-sm">This A4 Page is Empty</h3>
+                <p className="text-neutral-500 text-xs mt-1">
+                  Click &quot;Auto Arrange&quot; at the top, or click &quot;Place&quot; on any photo in the left panel to add it to this page.
+                </p>
+              </div>
+            )}
           </div>
         )}
       </div>

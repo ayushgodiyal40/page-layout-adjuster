@@ -11,7 +11,6 @@ import {
   SourcePhoto,
 } from './types';
 import { generateAutoLayoutPages } from './utils/layoutEngine';
-import { INITIAL_SAMPLE_PHOTOS } from './utils/sampleData';
 import { exportProjectToPDF } from './utils/pdfExport';
 import { downloadPageAsImage } from './utils/imageExport';
 import { TopToolbar } from './components/TopToolbar';
@@ -39,15 +38,21 @@ const DEFAULT_LAYOUT_CONFIG: PageLayoutConfig = {
   autoAlign: true,
 };
 
+const INITIAL_EMPTY_PAGES: Page[] = [
+  {
+    id: 'page-1',
+    name: 'Page 1',
+    photos: [],
+  },
+];
+
 export default function App() {
   // --- Core Project State ---
   const [projectName, setProjectName] = useState<string>('Godiyal_Store_Print_Layout');
-  const [sourcePhotos, setSourcePhotos] = useState<SourcePhoto[]>(INITIAL_SAMPLE_PHOTOS);
+  const [sourcePhotos, setSourcePhotos] = useState<SourcePhoto[]>([]);
   const [layoutConfig, setLayoutConfig] = useState<PageLayoutConfig>(DEFAULT_LAYOUT_CONFIG);
   
-  const [pages, setPages] = useState<Page[]>(() =>
-    generateAutoLayoutPages(INITIAL_SAMPLE_PHOTOS, DEFAULT_LAYOUT_CONFIG)
-  );
+  const [pages, setPages] = useState<Page[]>(INITIAL_EMPTY_PAGES);
   const [activePageIndex, setActivePageIndex] = useState<number>(0);
   const [selectedPhotoIds, setSelectedPhotoIds] = useState<string[]>([]);
   
@@ -77,7 +82,7 @@ export default function App() {
   // --- Undo / Redo History Management ---
   const [history, setHistory] = useState<HistoryEntry[]>([
     {
-      pages: generateAutoLayoutPages(INITIAL_SAMPLE_PHOTOS, DEFAULT_LAYOUT_CONFIG),
+      pages: INITIAL_EMPTY_PAGES,
       activePageIndex: 0,
       globalLayoutConfig: DEFAULT_LAYOUT_CONFIG,
       selectedPhotoIds: [],
@@ -697,12 +702,6 @@ export default function App() {
             setSourcePhotos(updated);
           }}
           onOpenPassportForPhoto={(pId) => handleOpenPassportModal(pId)}
-          onLoadSamples={() => {
-            setSourcePhotos(INITIAL_SAMPLE_PHOTOS);
-            const freshPages = generateAutoLayoutPages(INITIAL_SAMPLE_PHOTOS, layoutConfig);
-            setPages(freshPages);
-            pushHistory(freshPages, layoutConfig, 'Load Sample Photos');
-          }}
           onClearAll={() => {
             setSourcePhotos([]);
             setPages([{ id: 'page-empty', name: 'Page 1', photos: [] }]);
@@ -732,6 +731,7 @@ export default function App() {
           onDuplicatePhoto={handleDuplicatePhoto}
           onDeletePlacedPhoto={handleDeletePlacedPhoto}
           onPlacePhotoOnPage={handlePlacePhotoOnPage}
+          onAddPhotos={handleAddPhotos}
         />
 
         {/* Right: Properties & Layout Controls */}

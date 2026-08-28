@@ -88,31 +88,37 @@ export const PassportModal: React.FC<PassportModalProps> = ({
             <label className="block text-xs font-semibold text-neutral-300 uppercase tracking-wider mb-2">
               1. Choose Headshot / Photo
             </label>
-            <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
-              {sourcePhotos.map((photo) => (
-                <button
-                  key={photo.id}
-                  id={`passport-select-photo-${photo.id}`}
-                  onClick={() => setSelectedPhotoId(photo.id)}
-                  className={`relative rounded-lg overflow-hidden border-2 aspect-[3/4] group bg-neutral-800 transition-all ${
-                    selectedPhotoId === photo.id
-                      ? 'border-indigo-500 ring-2 ring-indigo-500/50 shadow-lg'
-                      : 'border-neutral-700 hover:border-neutral-500 opacity-70 hover:opacity-100'
-                  }`}
-                >
-                  <img
-                    src={photo.dataUrl}
-                    alt={photo.name}
-                    className="w-full h-full object-cover"
-                  />
-                  {selectedPhotoId === photo.id && (
-                    <div className="absolute top-1 right-1 bg-indigo-600 rounded-full p-0.5 shadow">
-                      <Check className="w-3 h-3 text-white" />
-                    </div>
-                  )}
-                </button>
-              ))}
-            </div>
+            {sourcePhotos.length === 0 ? (
+              <div className="p-4 bg-neutral-950 border border-neutral-800 rounded-lg text-center text-xs text-neutral-400">
+                No photos in project. Please add photos to your project first before generating passport copies.
+              </div>
+            ) : (
+              <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
+                {sourcePhotos.map((photo) => (
+                  <button
+                    key={photo.id}
+                    id={`passport-select-photo-${photo.id}`}
+                    onClick={() => setSelectedPhotoId(photo.id)}
+                    className={`relative rounded-lg overflow-hidden border-2 aspect-[3/4] group bg-neutral-800 transition-all ${
+                      selectedPhotoId === photo.id
+                        ? 'border-indigo-500 ring-2 ring-indigo-500/50 shadow-lg'
+                        : 'border-neutral-700 hover:border-neutral-500 opacity-70 hover:opacity-100'
+                    }`}
+                  >
+                    <img
+                      src={photo.dataUrl}
+                      alt={photo.name}
+                      className="w-full h-full object-cover"
+                    />
+                    {selectedPhotoId === photo.id && (
+                      <div className="absolute top-1 right-1 bg-indigo-600 rounded-full p-0.5 shadow">
+                        <Check className="w-3 h-3 text-white" />
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Preset Size Picker */}

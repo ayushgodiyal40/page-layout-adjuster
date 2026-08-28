@@ -13,7 +13,6 @@ import {
   Square,
   Layers,
   Image as ImageIcon,
-  Sparkles,
 } from 'lucide-react';
 
 interface PhotosSidebarProps {
@@ -28,7 +27,7 @@ interface PhotosSidebarProps {
   onPreviewPhoto: (photo: SourcePhoto) => void;
   onReorderPhoto: (index: number, direction: 'up' | 'down') => void;
   onOpenPassportForPhoto: (photoId: string) => void;
-  onLoadSamples: () => void;
+  onLoadSamples?: () => void;
   onClearAll: () => void;
 }
 
@@ -163,23 +162,16 @@ export const PhotosSidebar: React.FC<PhotosSidebarProps> = ({
               <ImageIcon className="w-6 h-6" />
             </div>
             <div className="text-xs text-neutral-400">
-              No photos added yet. Add customer photos to start layout.
+              No photos in your project. Add photos to start creating print layouts.
             </div>
-            <div className="flex flex-col gap-2 pt-2">
+            <div className="pt-2">
               <button
                 id="sidebar-add-btn-empty"
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold shadow transition-colors"
+                className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold shadow transition-colors flex items-center justify-center gap-1.5"
               >
-                Add Photos from Computer
-              </button>
-              <button
-                id="sidebar-load-samples-btn"
-                onClick={onLoadSamples}
-                className="w-full py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition-colors"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                Load Sample Photos
+                <Upload className="w-3.5 h-3.5" />
+                Select Photos from Computer
               </button>
             </div>
           </div>
