@@ -82,14 +82,16 @@ export async function downloadPageAsImage(
   orientation: PageOrientation = 'portrait',
   format: 'png' | 'jpeg' = 'png',
   pageNumber = 1,
-  globalGrayscale = false
+  globalGrayscale = false,
+  projectName = 'A4_Photo_Layout'
 ): Promise<void> {
   const canvas = await renderPageToCanvas(page, sourcePhotos, orientation, globalGrayscale);
   const mimeType = format === 'jpeg' ? 'image/jpeg' : 'image/png';
   const dataUrl = canvas.toDataURL(mimeType, 0.95);
 
   const link = document.createElement('a');
-  link.download = `Godiyal_Store_Page_${pageNumber.toString().padStart(2, '0')}.${format === 'jpeg' ? 'jpg' : 'png'}`;
+  const safeName = projectName.trim() ? `${projectName.trim()}_` : '';
+  link.download = `${safeName}Page_${pageNumber.toString().padStart(2, '0')}.${format === 'jpeg' ? 'jpg' : 'png'}`;
   link.href = dataUrl;
   document.body.appendChild(link);
   link.click();

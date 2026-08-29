@@ -26,6 +26,7 @@ import {
   Scaling,
   ChevronDown,
   Check,
+  Loader2,
 } from 'lucide-react';
 
 interface TopToolbarProps {
@@ -50,9 +51,10 @@ interface TopToolbarProps {
   onLoadProject: (file: File) => void;
   onExportPDF: () => void;
   onExportImages: (format: 'png' | 'jpeg') => void;
-  onOpenPrintModal: () => void;
+  onPrint: () => void;
   isExportingPdf: boolean;
   pdfExportProgress: number;
+  isPrinting?: boolean;
 }
 
 export const TopToolbar: React.FC<TopToolbarProps> = ({
@@ -77,9 +79,10 @@ export const TopToolbar: React.FC<TopToolbarProps> = ({
   onLoadProject,
   onExportPDF,
   onExportImages,
-  onOpenPrintModal,
+  onPrint,
   isExportingPdf,
   pdfExportProgress,
+  isPrinting = false,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const projectFileInputRef = useRef<HTMLInputElement>(null);
@@ -299,12 +302,22 @@ export const TopToolbar: React.FC<TopToolbarProps> = ({
           {/* Print Button */}
           <button
             id="toolbar-print-btn"
-            onClick={onOpenPrintModal}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold shadow transition-colors"
-            title="Print directly at 100% Actual Size"
+            disabled={isPrinting}
+            onClick={onPrint}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-amber-600 hover:bg-amber-500 disabled:opacity-60 text-white text-xs font-semibold shadow transition-colors"
+            title="Print directly at 100% Actual Size without headers or footers"
           >
-            <Printer className="w-3.5 h-3.5" />
-            <span>Print</span>
+            {isPrinting ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <span>Preparing Print...</span>
+              </>
+            ) : (
+              <>
+                <Printer className="w-3.5 h-3.5" />
+                <span>Print</span>
+              </>
+            )}
           </button>
         </div>
       </div>

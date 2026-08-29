@@ -92,7 +92,7 @@ export async function exportProjectToPDF(
   sourcePhotos: SourcePhoto[],
   orientation: PageOrientation = 'portrait',
   globalGrayscale = false,
-  fileName = 'Godiyal_Store_A4_Print_Layout.pdf',
+  fileName = 'A4_Photo_Print_Layout.pdf',
   onProgress?: (progress: number, current: number, total: number) => void
 ): Promise<void> {
   const { width: a4W, height: a4H } = getA4Dimensions(orientation);

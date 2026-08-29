@@ -13,6 +13,7 @@ import {
 import { generateAutoLayoutPages } from './utils/layoutEngine';
 import { exportProjectToPDF } from './utils/pdfExport';
 import { downloadPageAsImage } from './utils/imageExport';
+import { printProjectDirectly } from './utils/printEngine';
 import { TopToolbar } from './components/TopToolbar';
 import { PhotosSidebar } from './components/PhotosSidebar';
 import { CanvasArea } from './components/CanvasArea';
@@ -20,7 +21,6 @@ import { PropertiesPanel } from './components/PropertiesPanel';
 import { PageNavigation } from './components/PageNavigation';
 import { CropModal } from './components/CropModal';
 import { PassportModal } from './components/PassportModal';
-import { PrintModal } from './components/PrintModal';
 import { PhotoPreviewModal } from './components/PhotoPreviewModal';
 
 const DEFAULT_LAYOUT_CONFIG: PageLayoutConfig = {
@@ -73,7 +73,7 @@ export default function App() {
   const [isPassportModalOpen, setIsPassportModalOpen] = useState<boolean>(false);
   const [passportTargetPhotoId, setPassportTargetPhotoId] = useState<string | undefined>(undefined);
   const [previewPhoto, setPreviewPhoto] = useState<SourcePhoto | null>(null);
-  const [isPrintModalOpen, setIsPrintModalOpen] = useState<boolean>(false);
+  const [isPrinting, setIsPrinting] = useState<boolean>(false);
 
   // PDF Export Status
   const [isExportingPdf, setIsExportingPdf] = useState<boolean>(false);
@@ -592,8 +592,25 @@ export default function App() {
         layoutConfig.orientation,
         format,
         i + 1,
+        globalGrayscale,
+        projectName
+      );
+    }
+  };
+
+  const handleDirectPrint = async () => {
+    try {
+      setIsPrinting(true);
+      await printProjectDirectly(
+        pages,
+        sourcePhotos,
+        layoutConfig.orientation,
         globalGrayscale
       );
+    } catch (err) {
+      console.error('Direct Print Error:', err);
+    } finally {
+      setIsPrinting(false);
     }
   };
 
@@ -675,7 +692,8 @@ export default function App() {
         onLoadProject={handleLoadProject}
         onExportPDF={handleExportPDF}
         onExportImages={handleExportImages}
-        onOpenPrintModal={() => setIsPrintModalOpen(true)}
+        onPrint={handleDirectPrint}
+        isPrinting={isPrinting}
         isExportingPdf={isExportingPdf}
         pdfExportProgress={pdfExportProgress}
       />
@@ -798,17 +816,6 @@ export default function App() {
         <PhotoPreviewModal
           photo={previewPhoto}
           onClose={() => setPreviewPhoto(null)}
-        />
-      )}
-
-      {/* Print Preparation Dialog */}
-      {isPrintModalOpen && (
-        <PrintModal
-          pages={pages}
-          sourcePhotos={sourcePhotos}
-          orientation={layoutConfig.orientation}
-          globalGrayscale={globalGrayscale}
-          onClose={() => setIsPrintModalOpen(false)}
         />
       )}
     </div>
